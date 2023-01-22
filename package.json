@@ -4,7 +4,7 @@
   "description": "Test ws server",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js -e html,js"
+    "start": "nodemon src/server.js -e html,js"
   },
   "author": "mdlufy",
   "license": "ISC",

@@ -5,7 +5,7 @@ const http = require("http");
 const HOST = "127.0.0.1";
 const PORT = 8000;
 
-const index = fs.readFileSync("./index.html", "utf8");
+const index = fs.readFileSync("public/index.html", "utf8");
 
 const server = http.createServer((req, res) => {
     res.writeHead(200);
@@ -33,9 +33,9 @@ wss.on("connection", (currConn, req) => {
     });
 });
 
-function broadcastMessage(message, currWs) {
+function broadcastMessage(message, currConn) {
     wss.clients.forEach((client) => {
-        if (client.readyState === ws.OPEN && client !== currWs) {
+        if (client.readyState === ws.OPEN && client !== currConn) {
             client.send(message, { binary: false });
         }
     });

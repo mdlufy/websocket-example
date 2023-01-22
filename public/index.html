@@ -66,14 +66,22 @@
         const socket = new WebSocket(url);
 
         socket.onmessage = function (event) {
-            console.log(event);
             const data = JSON.parse(event.data);
 
             const cell = cells[data.cell];
             cell.value = data.value;
         };
 
-        function createTable(table, columns) {
+        function onKeyup(event) {
+            const message = {
+                cell: event.target.id,
+                value: event.target.value,
+            };
+
+            socket.send(JSON.stringify(message));
+        }
+
+        function generateTable(table, columns) {
             const tr = document.createElement("tr");
 
             tr.innerHTML =
@@ -83,7 +91,7 @@
             table.appendChild(tr);
         }
 
-        function createRow(table, rowIndex, columns) {
+        function generateRow(table, rowIndex, columns) {
             const tr = document.createElement("tr");
 
             tr.innerHTML =
@@ -114,16 +122,8 @@
             }
         }
 
-        function onKeyup(event) {
-            const message = {
-                cell: event.target.id,
-                value: event.target.value,
-            };
+        generateTable(table, COLUMNS);
 
-            socket.send(JSON.stringify(message));
-        }
-
-        createTable(table, COLUMNS);
         fillTable(table);
     </script>
 </html>
