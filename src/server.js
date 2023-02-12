@@ -2,10 +2,11 @@ const ws = require("ws");
 const fs = require("fs");
 const http = require("http");
 
+const index = fs.readFileSync("public/index.html", "utf8");
+
+
 const HOST = "127.0.0.1";
 const PORT = 8000;
-
-const index = fs.readFileSync("public/index.html", "utf8");
 
 const server = http.createServer((req, res) => {
     res.writeHead(200);
@@ -18,24 +19,36 @@ server.listen(PORT, HOST, () => {
 
 const wss = new ws.WebSocketServer({ server });
 
-wss.on("connection", (currConn, req) => {
+const messages = [];
+
+wss.on("connection", (websocketConnection, req) => {
     const ip = req.socket.remoteAddress;
-    console.log(`Connected ${ip}`);
+    console.log(`[open] Connected ${ip}`);
 
-    currConn.on("message", (message) => {
-        console.log("Received: " + message);
+    broadcastMessages(messages, websocketConnection);
 
-        broadcastMessage(message, currConn);
+    websocketConnection.on("message", (message) => {
+        console.log("[message] Received: " + message);
+
+        messages.push(message);
+
+        broadcastMessage(message, websocketConnection);
     });
 
-    currConn.on("close", () => {
-        console.log(`Disconnected ${ip}`);
+    websocketConnection.on("close", () => {
+        console.log(`[close] Disconnected ${ip}`);
     });
 });
 
-function broadcastMessage(message, currConn) {
+function broadcastMessages(messages, client) {
+    messages.forEach((message) =>
+        client.send(message, { binary: false })
+    );
+}
+
+function broadcastMessage(message, websocketConnection) {
     wss.clients.forEach((client) => {
-        if (client.readyState === ws.OPEN && client !== currConn) {
+        if (client.readyState === ws.OPEN && client !== websocketConnection) {
             client.send(message, { binary: false });
         }
     });
