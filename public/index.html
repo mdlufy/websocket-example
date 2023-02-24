@@ -53,7 +53,7 @@
     </body>
     <script>
         const COLUMNS = ["A", "B", "C", "D", "E", "F", "G", "I", "K", "L", "M", "O"];
-        const ROW_COUNT = 30;
+        const ROWS_COUNT = 30;
 
         const table = document.querySelector("#table");
 
@@ -62,9 +62,9 @@
         const HOST = "127.0.0.1";
         const PORT = "8000";
 
-        const url = `ws://${HOST}:${PORT}/`;
+        const API_URL = `ws://${HOST}:${PORT}/`;
 
-        const socket = new WebSocket(url);
+        const socket = new WebSocket(API_URL);
 
         socket.onmessage = function (event) {
             const data = JSON.parse(event.data);
@@ -118,7 +118,7 @@
         }
 
         function fillTable(table) {
-            for (let i = 1; i <= ROW_COUNT; i++) {
+            for (let i = 1; i <= ROWS_COUNT; i++) {
                 generateRow(table, i, COLUMNS);
             }
         }
