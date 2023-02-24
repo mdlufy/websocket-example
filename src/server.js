@@ -4,7 +4,6 @@ const http = require("http");
 
 const index = fs.readFileSync("public/index.html", "utf8");
 
-
 const HOST = "127.0.0.1";
 const PORT = 8000;
 
@@ -41,9 +40,11 @@ wss.on("connection", (websocketConnection, req) => {
 });
 
 function broadcastMessages(messages, client) {
-    messages.forEach((message) =>
-        client.send(message, { binary: false })
-    );
+    messages.forEach((message) => {
+        if (client.readyState === ws.OPEN) {
+            client.send(message, { binary: false });
+        }
+    });
 }
 
 function broadcastMessage(message, websocketConnection) {
